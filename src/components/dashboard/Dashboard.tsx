@@ -3,20 +3,23 @@ import { StatsCards } from "./StatsCards";
 import { TimelineView } from "./TimelineView";
 import { ProjectionCard } from "./ProjectionCard";
 import { QuickActions } from "./QuickActions";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Dashboard = () => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-2"
+        className="space-y-1"
       >
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl md:text-3xl font-bold">
           Good morning, <span className="text-gradient">Alex</span>
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm md:text-base">
           You're doing great. 3 tasks completed, 2 remaining today.
         </p>
       </motion.div>
@@ -28,11 +31,11 @@ export const Dashboard = () => {
       <StatsCards />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 order-2 lg:order-1">
           <TimelineView />
         </div>
-        <div>
+        <div className="order-1 lg:order-2">
           <ProjectionCard />
         </div>
       </div>
