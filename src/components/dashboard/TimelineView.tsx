@@ -24,23 +24,23 @@ const getStatusStyles = (status: Task["status"]) => {
   switch (status) {
     case "completed":
       return {
-        dot: "bg-success shadow-[0_0_12px_hsl(var(--success)/0.5)]",
+        dot: "bg-success",
         line: "bg-success/30",
-        card: "border-success/30 bg-success/5",
+        card: "border-success/20 bg-success/5",
         icon: <Check className="w-4 h-4 text-success" />,
       };
     case "current":
       return {
-        dot: "bg-primary shadow-glow animate-pulse-glow",
+        dot: "bg-primary animate-pulse",
         line: "bg-primary/30",
-        card: "border-primary/40 bg-primary/10 shadow-glow",
+        card: "border-primary/30 bg-primary/5",
         icon: <Clock className="w-4 h-4 text-primary" />,
       };
     case "missed":
       return {
-        dot: "bg-destructive shadow-[0_0_12px_hsl(var(--destructive)/0.5)]",
+        dot: "bg-destructive",
         line: "bg-destructive/30",
-        card: "border-destructive/30 bg-destructive/5",
+        card: "border-destructive/20 bg-destructive/5",
         icon: <AlertCircle className="w-4 h-4 text-destructive" />,
       };
     default:
@@ -101,7 +101,7 @@ export const TimelineView = () => {
 
                 {/* Task card */}
                 <div className={cn(
-                  "flex-1 p-4 rounded-xl border transition-all duration-300",
+                  "flex-1 p-4 rounded-xl border transition-all duration-200",
                   styles.card
                 )}>
                   <div className="flex items-start justify-between">

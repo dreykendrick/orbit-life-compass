@@ -38,10 +38,10 @@ const stats = [
 ];
 
 const colorClasses = {
-  primary: "text-primary bg-primary/10 shadow-[0_0_20px_hsl(var(--primary)/0.15)]",
-  warning: "text-warning bg-warning/10 shadow-[0_0_20px_hsl(var(--warning)/0.15)]",
-  success: "text-success bg-success/10 shadow-[0_0_20px_hsl(var(--success)/0.15)]",
-  accent: "text-accent bg-accent/10 shadow-[0_0_20px_hsl(var(--accent)/0.15)]",
+  primary: "text-primary bg-primary/10",
+  warning: "text-warning bg-warning/10",
+  success: "text-success bg-success/10",
+  accent: "text-accent bg-accent/10",
 };
 
 export const StatsCards = () => {

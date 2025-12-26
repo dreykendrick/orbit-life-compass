@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Clock, Plus, Edit2, Trash2, Calendar, Repeat, Bell } from "lucide-react";
+import { Clock, Plus, Edit2, Trash2, Repeat, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,11 +25,11 @@ const routines: Routine[] = [
 ];
 
 const categoryColors: Record<string, string> = {
-  Wellness: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-  Fitness: "bg-success/10 text-success border-success/30",
-  Learning: "bg-accent/10 text-accent border-accent/30",
-  Work: "bg-warning/10 text-warning border-warning/30",
-  Finance: "bg-primary/10 text-primary border-primary/30",
+  Wellness: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+  Fitness: "bg-success/10 text-success border-success/20",
+  Learning: "bg-accent/10 text-accent border-accent/20",
+  Work: "bg-warning/10 text-warning border-warning/20",
+  Finance: "bg-primary/10 text-primary border-primary/20",
 };
 
 export const RoutinesView = () => {
@@ -50,7 +50,7 @@ export const RoutinesView = () => {
             Build lasting habits with consistent daily routines.
           </p>
         </div>
-        <Button variant="glow" className="gap-2">
+        <Button variant="default" className="gap-2">
           <Plus className="w-4 h-4" />
           Add Routine
         </Button>
@@ -78,7 +78,7 @@ export const RoutinesView = () => {
                     key={day}
                     className={cn(
                       "flex flex-col items-center p-3 rounded-xl transition-all",
-                      isToday && "bg-primary/10 border border-primary/30"
+                      isToday && "bg-primary/10 border border-primary/20"
                     )}
                   >
                     <span className={cn(

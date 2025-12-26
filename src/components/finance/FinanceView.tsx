@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, CreditCard, Target, ArrowRight } from "lucide-react";
+import { Wallet, TrendingUp, PiggyBank, CreditCard, Target, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -33,7 +33,7 @@ export const FinanceView = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card variant="gradient" className="h-full">
+          <Card variant="default" className="h-full">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -57,7 +57,7 @@ export const FinanceView = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <Card variant="gradient" className="h-full">
+          <Card variant="default" className="h-full">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -120,7 +120,7 @@ export const FinanceView = () => {
                     initial={{ width: 0 }}
                     animate={{ width: "59%" }}
                     transition={{ duration: 1, delay: 0.5 }}
-                    className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
+                    className="h-full bg-primary rounded-full"
                   />
                 </div>
               </div>
@@ -165,7 +165,7 @@ export const FinanceView = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "68%" }}
                   transition={{ duration: 1, delay: 0.5 }}
-                  className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
+                  className="h-full bg-primary rounded-full"
                 />
               </div>
 

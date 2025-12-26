@@ -59,20 +59,20 @@ const colorClasses = {
   primary: {
     bg: "bg-primary/10",
     text: "text-primary",
-    border: "border-primary/30",
-    progress: "from-primary to-primary/60",
+    border: "border-primary/20",
+    progress: "bg-primary",
   },
   accent: {
     bg: "bg-accent/10",
     text: "text-accent",
-    border: "border-accent/30",
-    progress: "from-accent to-accent/60",
+    border: "border-accent/20",
+    progress: "bg-accent",
   },
   success: {
     bg: "bg-success/10",
     text: "text-success",
-    border: "border-success/30",
-    progress: "from-success to-success/60",
+    border: "border-success/20",
+    progress: "bg-success",
   },
 };
 
@@ -94,7 +94,7 @@ export const GoalsView = () => {
             Track your long-term objectives and see where your daily actions lead.
           </p>
         </div>
-        <Button variant="glow" className="gap-2">
+        <Button variant="default" className="gap-2">
           <Plus className="w-4 h-4" />
           Add Goal
         </Button>
@@ -161,7 +161,7 @@ export const GoalsView = () => {
                         initial={{ width: 0 }}
                         animate={{ width: `${goal.progress}%` }}
                         transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                        className={`h-full bg-gradient-to-r ${colors.progress} rounded-full`}
+                        className={`h-full ${colors.progress} rounded-full`}
                       />
                     </div>
                   </div>
@@ -204,7 +204,7 @@ export const GoalsView = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <Card variant="gradient">
+        <Card variant="default">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -219,7 +219,7 @@ export const GoalsView = () => {
                 
                 {["Now", "3 months", "6 months", "9 months", "1 year"].map((label, i) => (
                   <div key={label} className="relative z-10 flex flex-col items-center">
-                    <div className={`w-4 h-4 rounded-full ${i === 0 ? 'bg-primary shadow-glow' : 'bg-secondary border-2 border-border'}`} />
+                    <div className={`w-4 h-4 rounded-full ${i === 0 ? 'bg-primary' : 'bg-secondary border-2 border-border'}`} />
                     <span className="mt-3 text-xs text-muted-foreground">{label}</span>
                   </div>
                 ))}

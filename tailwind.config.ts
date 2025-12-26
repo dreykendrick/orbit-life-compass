@@ -69,7 +69,6 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         orbit: {
-          glow: "hsl(var(--orbit-glow))",
           surface: "hsl(var(--orbit-surface))",
           "surface-hover": "hsl(var(--orbit-surface-hover))",
           glass: "hsl(var(--orbit-glass))",
@@ -82,9 +81,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        glow: "var(--shadow-glow)",
-        card: "var(--shadow-card)",
-        elevated: "var(--shadow-elevated)",
+        card: "0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05)",
+        elevated: "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
       },
       keyframes: {
         "accordion-down": {
@@ -107,10 +105,6 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        shimmer: {
-          from: { backgroundPosition: "-200% 0" },
-          to: { backgroundPosition: "200% 0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -118,7 +112,6 @@ export default {
         "fade-in": "fade-in 0.5s ease-out",
         "slide-in-left": "slide-in-left 0.4s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
-        shimmer: "shimmer 2s linear infinite",
       },
     },
   },
