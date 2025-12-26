@@ -29,7 +29,7 @@ const projections: Projection[] = [
 
 export const ProjectionCard = () => {
   return (
-    <Card variant="gradient" className="overflow-hidden">
+    <Card variant="default" className="overflow-hidden">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -69,13 +69,7 @@ export const ProjectionCard = () => {
                 initial={{ width: 0 }}
                 animate={{ width: `${projection.currentProgress}%` }}
                 transition={{ duration: 1, delay: 0.3 + index * 0.15 }}
-                className="absolute left-0 top-0 h-full bg-gradient-to-r from-primary to-accent rounded-full"
-              />
-              <div 
-                className="absolute top-0 h-full w-full"
-                style={{
-                  background: `linear-gradient(90deg, transparent ${projection.currentProgress - 5}%, hsl(var(--primary) / 0.3) ${projection.currentProgress}%, transparent ${projection.currentProgress + 5}%)`,
-                }}
+                className="absolute left-0 top-0 h-full bg-primary rounded-full"
               />
             </div>
 

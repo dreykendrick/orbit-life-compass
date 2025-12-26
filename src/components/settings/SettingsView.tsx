@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Settings, User, Bell, Palette, Globe, Shield, HelpCircle, LogOut } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -51,10 +51,10 @@ export const SettingsView = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card variant="gradient">
+        <Card variant="default">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-glow">
+              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-primary-foreground">
                 A
               </div>
               <div className="flex-1">
@@ -68,7 +68,7 @@ export const SettingsView = () => {
                   <span className="text-xs text-muted-foreground">Member since Dec 2024</span>
                 </div>
               </div>
-              <Button variant="glow">Upgrade</Button>
+              <Button variant="default">Upgrade</Button>
             </div>
           </CardContent>
         </Card>

@@ -30,12 +30,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Background gradient effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -45,7 +39,7 @@ const Index = () => {
 
       <main
         className={cn(
-          "min-h-screen transition-all duration-300 relative z-10",
+          "min-h-screen transition-all duration-300",
           isCollapsed ? "ml-20" : "ml-64"
         )}
       >

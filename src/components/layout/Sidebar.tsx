@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
@@ -6,7 +7,9 @@ import {
   Wallet, 
   Settings,
   ChevronLeft,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +29,24 @@ const navItems = [
 ];
 
 export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }: SidebarProps) => {
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    // Check for saved preference or system preference
+    const saved = localStorage.getItem("orbit-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldBeDark = saved ? saved === "dark" : prefersDark;
+    setIsDark(shouldBeDark);
+    document.documentElement.classList.toggle("dark", shouldBeDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    document.documentElement.classList.toggle("dark", newIsDark);
+    localStorage.setItem("orbit-theme", newIsDark ? "dark" : "light");
+  };
+
   return (
     <motion.aside
       initial={{ x: -20, opacity: 0 }}
@@ -42,13 +63,12 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
           whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg" />
-            <div className="relative w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-glow">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
           </div>
           {!isCollapsed && (
-            <span className="text-xl font-bold text-gradient">ORBIT</span>
+            <span className="text-xl font-bold text-foreground">ORBIT</span>
           )}
         </motion.div>
         
@@ -99,7 +119,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="ml-auto w-2 h-2 bg-primary rounded-full shadow-glow"
+                      className="ml-auto w-2 h-2 bg-primary rounded-full"
                     />
                   )}
                 </button>
@@ -110,9 +130,27 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
       </nav>
 
       {/* Bottom section */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border space-y-3">
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className={cn(
+            "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors",
+            "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+          )}
+        >
+          {isDark ? (
+            <Sun className="w-5 h-5" />
+          ) : (
+            <Moon className="w-5 h-5" />
+          )}
+          {!isCollapsed && (
+            <span className="font-medium">{isDark ? "Light Mode" : "Dark Mode"}</span>
+          )}
+        </button>
+
         {!isCollapsed && (
-          <div className="px-4 py-3 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+          <div className="px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
             <p className="text-xs text-muted-foreground mb-1">Current streak</p>
             <p className="text-2xl font-bold text-primary">7 days</p>
           </div>
