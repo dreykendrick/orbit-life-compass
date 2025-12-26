@@ -12,6 +12,7 @@ import {
   Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   activeTab: string;
@@ -30,9 +31,9 @@ const navItems = [
 
 export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }: SidebarProps) => {
   const [isDark, setIsDark] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Check for saved preference or system preference
     const saved = localStorage.getItem("orbit-theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const shouldBeDark = saved ? saved === "dark" : prefersDark;
@@ -46,6 +47,9 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
     document.documentElement.classList.toggle("dark", newIsDark);
     localStorage.setItem("orbit-theme", newIsDark ? "dark" : "light");
   };
+
+  // Don't render sidebar on mobile
+  if (isMobile) return null;
 
   return (
     <motion.aside

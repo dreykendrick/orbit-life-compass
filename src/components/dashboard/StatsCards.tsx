@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { TrendingUp, Flame, Target, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const stats = [
   {
@@ -45,6 +46,44 @@ const colorClasses = {
 };
 
 export const StatsCards = () => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    // Horizontal scroll on mobile
+    return (
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="shrink-0 w-36"
+            >
+              <Card variant="interactive" className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className={`p-2 rounded-lg w-fit ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="mt-3">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold">{stat.value}</span>
+                      <span className="text-xs text-muted-foreground">{stat.subtext}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, index) => {

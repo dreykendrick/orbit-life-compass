@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Check, Clock, AlertCircle } from "lucide-react";
+import { Check, Clock, AlertCircle, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Task {
   id: string;
@@ -25,28 +26,24 @@ const getStatusStyles = (status: Task["status"]) => {
     case "completed":
       return {
         dot: "bg-success",
-        line: "bg-success/30",
         card: "border-success/20 bg-success/5",
         icon: <Check className="w-4 h-4 text-success" />,
       };
     case "current":
       return {
         dot: "bg-primary animate-pulse",
-        line: "bg-primary/30",
         card: "border-primary/30 bg-primary/5",
         icon: <Clock className="w-4 h-4 text-primary" />,
       };
     case "missed":
       return {
         dot: "bg-destructive",
-        line: "bg-destructive/30",
         card: "border-destructive/20 bg-destructive/5",
         icon: <AlertCircle className="w-4 h-4 text-destructive" />,
       };
     default:
       return {
         dot: "bg-muted-foreground/40",
-        line: "bg-border",
         card: "border-border bg-card hover:border-primary/20",
         icon: null,
       };
@@ -54,32 +51,36 @@ const getStatusStyles = (status: Task["status"]) => {
 };
 
 export const TimelineView = () => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Today's Timeline</h2>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h2 className="text-xl md:text-2xl font-bold">Today's Timeline</h2>
+          <p className="text-muted-foreground text-xs md:text-sm mt-1">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-success" />
-            <span className="text-muted-foreground">Completed</span>
+        {!isMobile && (
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-success" />
+              <span className="text-muted-foreground">Completed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-muted-foreground">Current</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-muted-foreground">Current</span>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-[27px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/50 via-border to-border" />
+        <div className="absolute left-[19px] md:left-[27px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/50 via-border to-border" />
 
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {tasks.map((task, index) => {
             const styles = getStatusStyles(task.status);
             
@@ -89,46 +90,51 @@ export const TimelineView = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="relative flex items-start gap-4"
+                className="relative flex items-start gap-3 md:gap-4"
               >
                 {/* Timeline dot */}
-                <div className="relative z-10 mt-4">
+                <div className="relative z-10 mt-3 md:mt-4">
                   <div className={cn(
-                    "w-3 h-3 rounded-full transition-all duration-300",
+                    "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300",
                     styles.dot
                   )} />
                 </div>
 
                 {/* Task card */}
                 <div className={cn(
-                  "flex-1 p-4 rounded-xl border transition-all duration-200",
+                  "flex-1 p-3 md:p-4 rounded-xl border transition-all duration-200 active:scale-[0.98]",
                   styles.card
                 )}>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5 md:mb-1">
+                        <span className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           {task.time}
                         </span>
-                        <span className="text-xs text-muted-foreground">•</span>
-                        <span className="text-xs text-muted-foreground">{task.duration}</span>
+                        <span className="text-[10px] md:text-xs text-muted-foreground">•</span>
+                        <span className="text-[10px] md:text-xs text-muted-foreground">{task.duration}</span>
                       </div>
                       <h3 className={cn(
-                        "font-semibold",
+                        "font-semibold text-sm md:text-base truncate",
                         task.status === "completed" && "text-muted-foreground line-through"
                       )}>
                         {task.name}
                       </h3>
-                      <span className="inline-block mt-2 text-xs px-2 py-1 rounded-md bg-secondary text-secondary-foreground">
+                      <span className="inline-block mt-1.5 md:mt-2 text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md bg-secondary text-secondary-foreground">
                         {task.category}
                       </span>
                     </div>
                     
-                    {styles.icon && (
-                      <div className="p-2 rounded-lg bg-background/50">
-                        {styles.icon}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {styles.icon && (
+                        <div className="p-1.5 md:p-2 rounded-lg bg-background/50">
+                          {styles.icon}
+                        </div>
+                      )}
+                      {isMobile && (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>
