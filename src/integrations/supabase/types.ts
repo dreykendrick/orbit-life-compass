@@ -14,7 +14,257 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          frequency: string | null
+          id: string
+          is_fixed: boolean | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          frequency?: string | null
+          id?: string
+          is_fixed?: boolean | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          frequency?: string | null
+          id?: string
+          is_fixed?: boolean | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      finance_settings: {
+        Row: {
+          created_at: string
+          currency: string | null
+          id: string
+          monthly_income: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          id?: string
+          monthly_income?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          id?: string
+          monthly_income?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          category: string
+          created_at: string
+          current_value: number | null
+          daily_action: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          target_date: string | null
+          target_value: number | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          current_value?: number | null
+          daily_action?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          target_date?: string | null
+          target_value?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_value?: number | null
+          daily_action?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          target_date?: string | null
+          target_value?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          theme_preference: string | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          theme_preference?: string | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          theme_preference?: string | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      routines: {
+        Row: {
+          alarm_enabled: boolean | null
+          created_at: string
+          custom_days: number[] | null
+          description: string | null
+          duration_minutes: number
+          frequency: string
+          id: string
+          is_active: boolean | null
+          start_time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alarm_enabled?: boolean | null
+          created_at?: string
+          custom_days?: number[] | null
+          description?: string | null
+          duration_minutes?: number
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          start_time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alarm_enabled?: boolean | null
+          created_at?: string
+          custom_days?: number[] | null
+          description?: string | null
+          duration_minutes?: number
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          start_time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      savings_goals: {
+        Row: {
+          created_at: string
+          current_amount: number | null
+          id: string
+          target_amount: number
+          target_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number | null
+          id?: string
+          target_amount: number
+          target_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number | null
+          id?: string
+          target_amount?: number
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_completions: {
+        Row: {
+          completed_at: string | null
+          completed_date: string
+          created_at: string
+          id: string
+          routine_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_date: string
+          created_at?: string
+          id?: string
+          routine_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_date?: string
+          created_at?: string
+          id?: string
+          routine_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_completions_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
