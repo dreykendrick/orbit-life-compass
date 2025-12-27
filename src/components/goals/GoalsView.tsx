@@ -1,81 +1,47 @@
 import { motion } from "framer-motion";
-import { Target, TrendingUp, Calendar, Plus, Sparkles, DollarSign, BookOpen, Dumbbell, ChevronRight } from "lucide-react";
+import { Target, TrendingUp, Calendar, Plus, Sparkles, DollarSign, BookOpen, Dumbbell, ChevronRight, Heart, Briefcase, User, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGoals, useDeleteGoal } from "@/hooks/useGoals";
+import { AddGoalDialog } from "./AddGoalDialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
-interface Goal {
-  id: string;
-  title: string;
-  category: string;
-  icon: typeof Target;
-  progress: number;
-  target: string;
-  current: string;
-  projectedDate: string;
-  dailyAction: string;
-  color: string;
-}
+const categoryIcons: Record<string, typeof Target> = {
+  finance: DollarSign,
+  fitness: Dumbbell,
+  learning: BookOpen,
+  health: Heart,
+  career: Briefcase,
+  personal: User,
+};
 
-const goals: Goal[] = [
-  {
-    id: "1",
-    title: "Emergency Fund",
-    category: "Finance",
-    icon: DollarSign,
-    progress: 68,
-    target: "$5,000",
-    current: "$3,400",
-    projectedDate: "March 15, 2025",
-    dailyAction: "Save $21/day",
-    color: "primary",
-  },
-  {
-    id: "2",
-    title: "Learn French (B1 Level)",
-    category: "Learning",
-    icon: BookOpen,
-    progress: 42,
-    target: "B1 Fluency",
-    current: "A2 Level",
-    projectedDate: "June 20, 2025",
-    dailyAction: "Practice 30 min/day",
-    color: "accent",
-  },
-  {
-    id: "3",
-    title: "Run a Half Marathon",
-    category: "Fitness",
-    icon: Dumbbell,
-    progress: 35,
-    target: "21.1 km",
-    current: "7 km max",
-    projectedDate: "September 1, 2025",
-    dailyAction: "Train 4x/week",
-    color: "success",
-  },
-];
-
-const colorClasses = {
-  primary: {
-    bg: "bg-primary/10",
-    text: "text-primary",
-    progress: "bg-primary",
-  },
-  accent: {
-    bg: "bg-accent/10",
-    text: "text-accent",
-    progress: "bg-accent",
-  },
-  success: {
-    bg: "bg-success/10",
-    text: "text-success",
-    progress: "bg-success",
-  },
+const categoryColors: Record<string, { bg: string; text: string; progress: string }> = {
+  finance: { bg: "bg-primary/10", text: "text-primary", progress: "bg-primary" },
+  fitness: { bg: "bg-success/10", text: "text-success", progress: "bg-success" },
+  learning: { bg: "bg-accent/10", text: "text-accent", progress: "bg-accent" },
+  health: { bg: "bg-pink-500/10", text: "text-pink-500", progress: "bg-pink-500" },
+  career: { bg: "bg-warning/10", text: "text-warning", progress: "bg-warning" },
+  personal: { bg: "bg-purple-500/10", text: "text-purple-500", progress: "bg-purple-500" },
 };
 
 export const GoalsView = () => {
   const isMobile = useIsMobile();
+  const { data: goals, isLoading } = useGoals();
+  const deleteGoal = useDeleteGoal();
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this goal?")) {
+      await deleteGoal.mutateAsync(id);
+    }
+  };
+
+  const calculateProgress = (current: number | null, target: number | null) => {
+    if (!target || target === 0) return 0;
+    const current_val = current || 0;
+    return Math.min(Math.round((current_val / target) * 100), 100);
+  };
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -94,161 +60,182 @@ export const GoalsView = () => {
             Track your objectives and see where your daily actions lead.
           </p>
         </div>
-        <Button variant="default" size={isMobile ? "sm" : "default"} className="gap-1 md:gap-2 shrink-0">
-          <Plus className="w-4 h-4" />
-          {!isMobile && "Add Goal"}
-        </Button>
+        <AddGoalDialog />
       </motion.div>
 
-      {/* AI Insight Banner */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1 }}
-      >
-        <Card variant="glow" className="overflow-hidden">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-start gap-3 md:gap-4">
-              <div className="p-2 md:p-3 rounded-xl bg-primary/10 shrink-0">
-                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm md:text-base">AI Insight</h3>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                  You're on track to achieve <span className="text-primary font-medium">2 out of 3</span> goals 
-                  ahead of schedule.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Goals List */}
-      <div className="space-y-3 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-6 md:space-y-0">
-        {goals.map((goal, index) => {
-          const Icon = goal.icon;
-          const colors = colorClasses[goal.color as keyof typeof colorClasses];
-          
-          return (
-            <motion.div
-              key={goal.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.1 }}
-            >
-              <Card variant="interactive" className="h-full active:scale-[0.98] transition-transform">
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <div className={`p-2.5 md:p-3 rounded-xl ${colors.bg} shrink-0`}>
-                      <Icon className={`w-5 h-5 ${colors.text}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-sm md:text-base truncate">{goal.title}</h3>
-                          <p className="text-xs text-muted-foreground">{goal.dailyAction}</p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className={`font-bold text-sm md:text-base ${colors.text}`}>{goal.progress}%</span>
-                          {isMobile && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
-                        </div>
-                      </div>
-                      
-                      {/* Progress bar */}
-                      <div className="h-1.5 md:h-2 bg-secondary rounded-full overflow-hidden mt-3">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${goal.progress}%` }}
-                          transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                          className={`h-full ${colors.progress} rounded-full`}
-                        />
-                      </div>
-
-                      {/* Stats - hidden on mobile for cleaner look */}
-                      {!isMobile && (
-                        <>
-                          <div className="grid grid-cols-2 gap-4 py-3 mt-3 border-t border-border">
-                            <div>
-                              <p className="text-xs text-muted-foreground">Current</p>
-                              <p className="font-semibold text-sm">{goal.current}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-muted-foreground">Target</p>
-                              <p className="font-semibold text-sm">{goal.target}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-sm mt-2">
-                            <Calendar className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-muted-foreground">Est. {goal.projectedDate}</span>
-                          </div>
-                        </>
-                      )}
-
-                      {isMobile && (
-                        <div className="flex items-center justify-between mt-3 text-xs">
-                          <span className="text-muted-foreground">{goal.current} → {goal.target}</span>
-                          <span className={`${colors.text} font-medium`}>{goal.projectedDate.split(',')[0]}</span>
-                        </div>
-                      )}
-                    </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} variant="interactive">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <Skeleton className="w-12 h-12 rounded-xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-2 w-full mt-4" />
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      {/* Projection Timeline - Desktop only */}
-      {!isMobile && (
+      {/* Empty State */}
+      {!isLoading && (!goals || goals.length === 0) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          className="text-center py-12"
         >
-          <Card variant="default">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Future Projection
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                <div className="flex items-center justify-between relative">
-                  <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gradient-to-r from-primary via-accent to-success" />
-                  
-                  {["Now", "3 months", "6 months", "9 months", "1 year"].map((label, i) => (
-                    <div key={label} className="relative z-10 flex flex-col items-center">
-                      <div className={`w-4 h-4 rounded-full ${i === 0 ? 'bg-primary' : 'bg-secondary border-2 border-border'}`} />
-                      <span className="mt-3 text-xs text-muted-foreground">{label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8 space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-3 h-3 rounded-full bg-primary" />
-                    <span className="text-muted-foreground">Emergency Fund completed</span>
-                    <span className="text-primary font-medium ml-auto">~3 months</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-3 h-3 rounded-full bg-accent" />
-                    <span className="text-muted-foreground">French B1 achieved</span>
-                    <span className="text-accent font-medium ml-auto">~6 months</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-3 h-3 rounded-full bg-success" />
-                    <span className="text-muted-foreground">Half Marathon ready</span>
-                    <span className="text-success font-medium ml-auto">~8 months</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+            <Target className="w-8 h-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No goals yet</h3>
+          <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+            Set your first goal to start tracking your progress and achieving your dreams.
+          </p>
+          <AddGoalDialog>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              Create Your First Goal
+            </Button>
+          </AddGoalDialog>
         </motion.div>
+      )}
+
+      {/* Goals List */}
+      {!isLoading && goals && goals.length > 0 && (
+        <>
+          {/* AI Insight Banner - only show when there are goals */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card variant="glow" className="overflow-hidden">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="p-2 md:p-3 rounded-xl bg-primary/10 shrink-0">
+                    <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm md:text-base">Your Progress</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                      You have <span className="text-primary font-medium">{goals.length} active goal{goals.length !== 1 ? 's' : ''}</span>. Keep tracking your progress daily!
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <div className="space-y-3 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-6 md:space-y-0">
+            {goals.map((goal, index) => {
+              const Icon = categoryIcons[goal.category.toLowerCase()] || Target;
+              const colors = categoryColors[goal.category.toLowerCase()] || categoryColors.personal;
+              const progress = calculateProgress(goal.current_value, goal.target_value);
+              
+              return (
+                <motion.div
+                  key={goal.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
+                >
+                  <Card variant="interactive" className="h-full active:scale-[0.98] transition-transform group">
+                    <CardContent className="p-4 md:p-6">
+                      <div className="flex items-start gap-3 md:gap-4">
+                        <div className={`p-2.5 md:p-3 rounded-xl ${colors.bg} shrink-0`}>
+                          <Icon className={`w-5 h-5 ${colors.text}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-sm md:text-base truncate">{goal.title}</h3>
+                              {goal.daily_action && (
+                                <p className="text-xs text-muted-foreground">{goal.daily_action}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className={`font-bold text-sm md:text-base ${colors.text}`}>{progress}%</span>
+                              {isMobile && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                            </div>
+                          </div>
+                          
+                          {/* Progress bar */}
+                          <div className="h-1.5 md:h-2 bg-secondary rounded-full overflow-hidden mt-3">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${progress}%` }}
+                              transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
+                              className={`h-full ${colors.progress} rounded-full`}
+                            />
+                          </div>
+
+                          {/* Stats */}
+                          {!isMobile && goal.target_value && (
+                            <>
+                              <div className="grid grid-cols-2 gap-4 py-3 mt-3 border-t border-border">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Current</p>
+                                  <p className="font-semibold text-sm">{goal.current_value || 0}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Target</p>
+                                  <p className="font-semibold text-sm">{goal.target_value}</p>
+                                </div>
+                              </div>
+
+                              {goal.target_date && (
+                                <div className="flex items-center gap-2 text-sm mt-2">
+                                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                                  <span className="text-muted-foreground">
+                                    Target: {format(new Date(goal.target_date), 'MMM d, yyyy')}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          )}
+
+                          {isMobile && goal.target_value && (
+                            <div className="flex items-center justify-between mt-3 text-xs">
+                              <span className="text-muted-foreground">
+                                {goal.current_value || 0} → {goal.target_value}
+                              </span>
+                              {goal.target_date && (
+                                <span className={`${colors.text} font-medium`}>
+                                  {format(new Date(goal.target_date), 'MMM d')}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Delete button on hover (desktop) */}
+                          {!isMobile && (
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-3">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-destructive"
+                                onClick={() => handleDelete(goal.id)}
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

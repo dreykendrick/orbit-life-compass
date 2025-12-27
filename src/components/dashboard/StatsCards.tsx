@@ -1,42 +1,10 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Flame, Target, Zap } from "lucide-react";
+import { TrendingUp, Flame, Target, Zap, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-const stats = [
-  {
-    label: "Tasks Today",
-    value: "4/6",
-    subtext: "2 remaining",
-    icon: Target,
-    color: "primary",
-    trend: "+12%",
-  },
-  {
-    label: "Current Streak",
-    value: "7",
-    subtext: "days",
-    icon: Flame,
-    color: "warning",
-    trend: "Personal best!",
-  },
-  {
-    label: "Consistency",
-    value: "89%",
-    subtext: "this week",
-    icon: TrendingUp,
-    color: "success",
-    trend: "+5%",
-  },
-  {
-    label: "Focus Time",
-    value: "4.2h",
-    subtext: "today",
-    icon: Zap,
-    color: "accent",
-    trend: "On track",
-  },
-];
+import { useRoutines } from "@/hooks/useRoutines";
+import { useGoals } from "@/hooks/useGoals";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const colorClasses = {
   primary: "text-primary bg-primary/10",
@@ -47,9 +15,95 @@ const colorClasses = {
 
 export const StatsCards = () => {
   const isMobile = useIsMobile();
+  const { data: routines, isLoading: routinesLoading } = useRoutines();
+  const { data: goals, isLoading: goalsLoading } = useGoals();
+
+  const isLoading = routinesLoading || goalsLoading;
+
+  // Calculate real stats
+  const activeRoutines = routines?.filter(r => r.is_active)?.length || 0;
+  const totalRoutines = routines?.length || 0;
+  const activeGoals = goals?.filter(g => g.is_active)?.length || 0;
+  
+  // Calculate average goal progress
+  const avgProgress = goals?.length 
+    ? Math.round(goals.reduce((acc, g) => {
+        if (!g.target_value) return acc;
+        return acc + Math.min(((g.current_value || 0) / g.target_value) * 100, 100);
+      }, 0) / goals.filter(g => g.target_value).length) || 0
+    : 0;
+
+  const stats = [
+    {
+      label: "Active Routines",
+      value: activeRoutines.toString(),
+      subtext: `of ${totalRoutines}`,
+      icon: Clock,
+      color: "primary",
+    },
+    {
+      label: "Active Goals",
+      value: activeGoals.toString(),
+      subtext: "tracking",
+      icon: Target,
+      color: "warning",
+    },
+    {
+      label: "Avg Progress",
+      value: `${avgProgress}%`,
+      subtext: "on goals",
+      icon: TrendingUp,
+      color: "success",
+    },
+    {
+      label: "Keep Going",
+      value: "💪",
+      subtext: "You got this!",
+      icon: Zap,
+      color: "accent",
+    },
+  ];
+
+  if (isLoading) {
+    if (isMobile) {
+      return (
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="shrink-0 w-36">
+              <Card variant="interactive">
+                <CardContent className="p-4">
+                  <Skeleton className="w-8 h-8 rounded-lg" />
+                  <Skeleton className="h-6 w-16 mt-3" />
+                  <Skeleton className="h-3 w-12 mt-2" />
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} variant="interactive">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-12" />
+                </div>
+                <Skeleton className="w-12 h-12 rounded-xl" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   if (isMobile) {
-    // Horizontal scroll on mobile
     return (
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
         {stats.map((stat, index) => {
@@ -105,7 +159,6 @@ export const StatsCards = () => {
                       <span className="text-3xl font-bold">{stat.value}</span>
                       <span className="text-sm text-muted-foreground">{stat.subtext}</span>
                     </div>
-                    <p className="text-xs text-success mt-2 font-medium">{stat.trend}</p>
                   </div>
                   <div className={`p-3 rounded-xl ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
                     <Icon className="w-5 h-5" />
