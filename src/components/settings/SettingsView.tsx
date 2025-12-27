@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 const settingsGroups = [
   {
@@ -31,6 +33,15 @@ const settingsGroups = [
 
 export const SettingsView = () => {
   const isMobile = useIsMobile();
+  const { user, signOut } = useAuth();
+  const { data: profile } = useProfile();
+
+  const displayName = profile?.display_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName.charAt(0).toUpperCase();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <div className="space-y-6 md:space-y-8 max-w-3xl">
@@ -58,11 +69,11 @@ export const SettingsView = () => {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary flex items-center justify-center text-lg md:text-2xl font-bold text-primary-foreground shrink-0">
-                A
+                {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-base md:text-xl font-semibold truncate">Alex Johnson</h2>
-                <p className="text-xs md:text-sm text-muted-foreground truncate">alex@example.com</p>
+                <h2 className="text-base md:text-xl font-semibold truncate">{displayName}</h2>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">{user?.email}</p>
                 <div className="flex items-center gap-2 mt-1 md:mt-2">
                   <span className="text-[10px] md:text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                     Free Plan
@@ -125,7 +136,11 @@ export const SettingsView = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
       >
-        <Button variant="ghost" className="w-full justify-start gap-2 md:gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 active:bg-destructive/20">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start gap-2 md:gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 active:bg-destructive/20"
+          onClick={handleSignOut}
+        >
           <LogOut className="w-4 h-4 md:w-5 md:h-5" />
           Sign Out
         </Button>

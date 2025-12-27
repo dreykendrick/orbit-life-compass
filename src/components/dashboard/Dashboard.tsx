@@ -4,9 +4,16 @@ import { TimelineView } from "./TimelineView";
 import { ProjectionCard } from "./ProjectionCard";
 import { QuickActions } from "./QuickActions";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useProfile } from "@/hooks/useProfile";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Dashboard = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
+
+  const displayName = profile?.display_name || user?.email?.split("@")[0] || "there";
+  const greeting = getGreeting();
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -17,7 +24,7 @@ export const Dashboard = () => {
         className="space-y-1"
       >
         <h1 className="text-2xl md:text-3xl font-bold">
-          Good morning, <span className="text-gradient">Alex</span>
+          {greeting}, <span className="text-gradient">{displayName}</span>
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">
           You're doing great. 3 tasks completed, 2 remaining today.
@@ -42,3 +49,10 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
