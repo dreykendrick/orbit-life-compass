@@ -1,15 +1,21 @@
 import { motion } from "framer-motion";
-import { Menu, X, Sun, Moon, Sparkles } from "lucide-react";
+import { Menu, Sun, Moon, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { toast } from "sonner";
 
 interface MobileHeaderProps {
   title: string;
+  setActiveTab?: (tab: string) => void;
 }
 
-export const MobileHeader = ({ title }: MobileHeaderProps) => {
+export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
   const [isDark, setIsDark] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { data: profile } = useProfile();
 
   useEffect(() => {
     const saved = localStorage.getItem("orbit-theme");
@@ -23,6 +29,36 @@ export const MobileHeader = ({ title }: MobileHeaderProps) => {
     document.documentElement.classList.toggle("dark", newIsDark);
     localStorage.setItem("orbit-theme", newIsDark ? "dark" : "light");
   };
+
+  const handleNavigation = (tab: string) => {
+    if (setActiveTab) {
+      setActiveTab(tab);
+    }
+    setIsOpen(false);
+  };
+
+  const handleNotifications = () => {
+    toast.info("Notifications coming soon!");
+    setIsOpen(false);
+  };
+
+  const handleHelp = () => {
+    toast.info("Help & Support - Contact us at support@orbit.app");
+    setIsOpen(false);
+  };
+
+  const handleUpgrade = () => {
+    toast.info("Pro features coming soon!");
+    setIsOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsOpen(false);
+  };
+
+  const displayName = profile?.display_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <motion.header
@@ -62,10 +98,10 @@ export const MobileHeader = ({ title }: MobileHeaderProps) => {
               <div className="p-6 border-b border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-xl font-bold text-primary-foreground">
-                    A
+                    {initials}
                   </div>
                   <div>
-                    <p className="font-semibold">Alex Johnson</p>
+                    <p className="font-semibold">{displayName}</p>
                     <p className="text-sm text-muted-foreground">Free Plan</p>
                   </div>
                 </div>
@@ -78,19 +114,38 @@ export const MobileHeader = ({ title }: MobileHeaderProps) => {
                 </div>
 
                 <div className="space-y-1">
-                  <button className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
+                  <button 
+                    onClick={() => handleNavigation("settings")}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors"
+                  >
                     Profile Settings
                   </button>
-                  <button className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
+                  <button 
+                    onClick={handleNotifications}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors"
+                  >
                     Notifications
                   </button>
-                  <button className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
+                  <button 
+                    onClick={handleHelp}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-secondary transition-colors"
+                  >
                     Help & Support
                   </button>
                 </div>
 
-                <button className="w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-medium active:scale-[0.98] transition-transform">
+                <button 
+                  onClick={handleUpgrade}
+                  className="w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-medium active:scale-[0.98] transition-transform"
+                >
                   Upgrade to Pro
+                </button>
+
+                <button 
+                  onClick={handleSignOut}
+                  className="w-full px-4 py-3 rounded-xl border border-border text-muted-foreground hover:bg-secondary font-medium transition-colors"
+                >
+                  Sign Out
                 </button>
               </div>
             </SheetContent>
