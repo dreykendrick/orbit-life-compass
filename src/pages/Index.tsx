@@ -44,7 +44,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {isMobile ? (
         <>
-          <MobileHeader title={tabTitles[activeTab]} />
+          <MobileHeader title={tabTitles[activeTab]} setActiveTab={setActiveTab} />
           <main className="pt-14 pb-20 px-4">
             <div className="py-4">
               {renderContent()}
