@@ -33,36 +33,58 @@ export const StatsCards = () => {
       }, 0) / goals.filter(g => g.target_value).length) || 0
     : 0;
 
-  const stats = [
-    {
+  // Build stats dynamically - only show relevant cards
+  const stats = [];
+
+  // Always show Active Routines if there are any
+  if (totalRoutines > 0) {
+    stats.push({
       label: "Active Routines",
       value: activeRoutines.toString(),
       subtext: `of ${totalRoutines}`,
       icon: Clock,
       color: "primary",
-    },
-    {
+    });
+  }
+
+  // Always show Active Goals if there are any
+  if (goals?.length) {
+    stats.push({
       label: "Active Goals",
       value: activeGoals.toString(),
       subtext: "tracking",
       icon: Target,
       color: "warning",
-    },
-    {
+    });
+  }
+
+  // Only show Avg Progress if there are goals with target values
+  const goalsWithTargets = goals?.filter(g => g.target_value) || [];
+  if (goalsWithTargets.length > 0) {
+    stats.push({
       label: "Avg Progress",
       value: `${avgProgress}%`,
       subtext: "on goals",
       icon: TrendingUp,
       color: "success",
-    },
-    {
+    });
+  }
+
+  // Only show Keep Going if there are active routines or goals
+  if (activeRoutines > 0 || activeGoals > 0) {
+    stats.push({
       label: "Keep Going",
       value: "💪",
       subtext: "You got this!",
       icon: Zap,
       color: "accent",
-    },
-  ];
+    });
+  }
+
+  // If no data at all, don't render anything
+  if (stats.length === 0) {
+    return null;
+  }
 
   if (isLoading) {
     if (isMobile) {
