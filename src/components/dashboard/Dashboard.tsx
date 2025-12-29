@@ -6,14 +6,36 @@ import { QuickActions } from "./QuickActions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { useRoutines } from "@/hooks/useRoutines";
+import { useTodayStats } from "@/hooks/useTaskCompletions";
 
 export const Dashboard = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const { data: profile } = useProfile();
+  const { data: routines } = useRoutines();
+  const { data: todayCompletions } = useTodayStats();
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "there";
   const greeting = getGreeting();
+
+  // Calculate today's task stats
+  const activeRoutines = routines?.filter(r => r.is_active) || [];
+  const completedToday = todayCompletions?.length || 0;
+  const remainingToday = Math.max(0, activeRoutines.length - completedToday);
+
+  const getSubtitle = () => {
+    if (activeRoutines.length === 0) {
+      return "Add some routines to get started with your day!";
+    }
+    if (completedToday === 0 && remainingToday > 0) {
+      return `You have ${remainingToday} task${remainingToday !== 1 ? 's' : ''} to complete today.`;
+    }
+    if (remainingToday === 0 && completedToday > 0) {
+      return `Amazing! All ${completedToday} tasks completed today! 🎉`;
+    }
+    return `You're doing great. ${completedToday} task${completedToday !== 1 ? 's' : ''} completed, ${remainingToday} remaining today.`;
+  };
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -27,7 +49,7 @@ export const Dashboard = () => {
           {greeting}, <span className="text-gradient">{displayName}</span>
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">
-          You're doing great. 3 tasks completed, 2 remaining today.
+          {getSubtitle()}
         </p>
       </motion.div>
 
