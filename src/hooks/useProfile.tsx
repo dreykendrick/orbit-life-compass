@@ -50,7 +50,6 @@ export const useUpdateProfile = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Profile updated!");
     },
     onError: (error) => {
       toast.error("Failed to update profile");

@@ -102,3 +102,50 @@ export const useToggleTaskCompletion = () => {
     },
   });
 };
+
+export const useStreak = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["streak", user?.id],
+    queryFn: async () => {
+      // Get all completions ordered by date
+      const { data, error } = await supabase
+        .from("task_completions")
+        .select("completed_date")
+        .order("completed_date", { ascending: false });
+
+      if (error) throw error;
+      if (!data || data.length === 0) return 0;
+
+      // Get unique dates
+      const uniqueDates = [...new Set(data.map(c => c.completed_date))].sort().reverse();
+      
+      if (uniqueDates.length === 0) return 0;
+
+      const today = format(new Date(), "yyyy-MM-dd");
+      const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
+      
+      // Streak must start from today or yesterday
+      if (uniqueDates[0] !== today && uniqueDates[0] !== yesterday) {
+        return 0;
+      }
+
+      let streak = 0;
+      let checkDate = new Date(uniqueDates[0]);
+
+      for (const dateStr of uniqueDates) {
+        const expectedDate = format(checkDate, "yyyy-MM-dd");
+        if (dateStr === expectedDate) {
+          streak++;
+          checkDate = new Date(checkDate.getTime() - 86400000);
+        } else {
+          break;
+        }
+      }
+
+      return streak;
+    },
+    enabled: !!user,
+  });
+};
