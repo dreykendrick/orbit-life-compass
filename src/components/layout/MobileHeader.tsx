@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useStreak } from "@/hooks/useTaskCompletions";
 import { toast } from "sonner";
 
 interface MobileHeaderProps {
@@ -16,6 +17,7 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
+  const { data: streak = 0 } = useStreak();
 
   useEffect(() => {
     const saved = localStorage.getItem("orbit-theme");
@@ -38,12 +40,15 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
   };
 
   const handleNotifications = () => {
-    toast.info("Notifications coming soon!");
+    toast.info("Notifications", {
+      description: "Push notifications will be available in the next update. Check your routines for reminders!",
+    });
     setIsOpen(false);
   };
 
   const handleHelp = () => {
-    toast.info("Help & Support - Contact us at support@orbit.app");
+    window.open("mailto:support@orbit.app?subject=Help Request", "_blank");
+    toast.success("Opening email client for support");
     setIsOpen(false);
   };
 
@@ -108,10 +113,12 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
               </div>
               
               <div className="p-4 space-y-4">
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                  <p className="text-xs text-muted-foreground mb-1">Current streak</p>
-                  <p className="text-2xl font-bold text-primary">7 days 🔥</p>
-                </div>
+                {streak > 0 && (
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                    <p className="text-xs text-muted-foreground mb-1">Current streak</p>
+                    <p className="text-2xl font-bold text-primary">{streak} day{streak !== 1 ? 's' : ''} 🔥</p>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <button 
