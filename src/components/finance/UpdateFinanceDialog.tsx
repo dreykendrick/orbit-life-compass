@@ -73,6 +73,8 @@ export const UpdateFinanceDialog = ({ children }: UpdateFinanceDialogProps) => {
                 <SelectItem value="JPY">JPY (¥)</SelectItem>
                 <SelectItem value="CAD">CAD (C$)</SelectItem>
                 <SelectItem value="AUD">AUD (A$)</SelectItem>
+                <SelectItem value="TZS">TZS (TSh)</SelectItem>
+                <SelectItem value="KES">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
           </div>

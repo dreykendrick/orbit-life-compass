@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Edit2, Trash2, Bell, ChevronRight, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRoutines, useDeleteRoutine } from "@/hooks/useRoutines";
+import { useRoutines, useDeleteRoutine, Routine } from "@/hooks/useRoutines";
 import { AddRoutineDialog } from "./AddRoutineDialog";
+import { EditRoutineDialog } from "./EditRoutineDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const categoryColors: Record<string, string> = {
@@ -33,11 +35,17 @@ export const RoutinesView = () => {
   const isMobile = useIsMobile();
   const { data: routines, isLoading } = useRoutines();
   const deleteRoutine = useDeleteRoutine();
+  const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm("Are you sure you want to delete this routine?")) {
       await deleteRoutine.mutateAsync(id);
     }
+  };
+
+  const handleCardClick = (routine: Routine) => {
+    setEditingRoutine(routine);
   };
 
   return (
@@ -117,9 +125,10 @@ export const RoutinesView = () => {
                 <Card 
                   variant="interactive" 
                   className={cn(
-                    "overflow-hidden active:scale-[0.98] transition-transform",
+                    "overflow-hidden active:scale-[0.98] transition-transform cursor-pointer",
                     !routine.is_active && "opacity-60"
                   )}
+                  onClick={() => handleCardClick(routine)}
                 >
                   <CardContent className="p-3 md:p-5">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -159,18 +168,27 @@ export const RoutinesView = () => {
                           
                           {!isMobile && (
                             <div className="flex items-center gap-1">
-                              <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
+                              <button 
+                                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Bell className={cn(
                                   "w-4 h-4",
                                   routine.alarm_enabled ? "text-primary" : "text-muted-foreground"
                                 )} />
                               </button>
-                              <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
+                              <button 
+                                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingRoutine(routine);
+                                }}
+                              >
                                 <Edit2 className="w-4 h-4 text-muted-foreground" />
                               </button>
                               <button 
                                 className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
-                                onClick={() => handleDelete(routine.id)}
+                                onClick={(e) => handleDelete(routine.id, e)}
                               >
                                 <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
                               </button>
@@ -180,7 +198,7 @@ export const RoutinesView = () => {
                           {isMobile && (
                             <button 
                               className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
-                              onClick={() => handleDelete(routine.id)}
+                              onClick={(e) => handleDelete(routine.id, e)}
                             >
                               <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
                             </button>
@@ -194,6 +212,15 @@ export const RoutinesView = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Edit Dialog */}
+      {editingRoutine && (
+        <EditRoutineDialog
+          routine={editingRoutine}
+          open={!!editingRoutine}
+          onOpenChange={(open) => !open && setEditingRoutine(null)}
+        />
       )}
     </div>
   );

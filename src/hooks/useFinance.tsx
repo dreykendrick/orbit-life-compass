@@ -138,6 +138,32 @@ export const useCreateExpense = () => {
   });
 };
 
+export const useUpdateExpense = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<Expense> & { id: string }) => {
+      const { data, error } = await supabase
+        .from("expenses")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      toast.success("Expense updated!");
+    },
+    onError: (error) => {
+      toast.error("Failed to update expense");
+      console.error(error);
+    },
+  });
+};
+
 export const useDeleteExpense = () => {
   const queryClient = useQueryClient();
 

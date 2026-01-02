@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Wallet, TrendingUp, PiggyBank, CreditCard, Target, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Wallet, TrendingUp, PiggyBank, CreditCard, Target, ChevronRight, Plus, Trash2, Edit2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useFinanceSettings, useExpenses, useSavingsGoals, useDeleteExpense } from "@/hooks/useFinance";
+import { useFinanceSettings, useExpenses, useSavingsGoals, useDeleteExpense, Expense } from "@/hooks/useFinance";
 import { UpdateFinanceDialog } from "./UpdateFinanceDialog";
 import { AddExpenseDialog } from "./AddExpenseDialog";
+import { EditExpenseDialog } from "./EditExpenseDialog";
 import { differenceInDays } from "date-fns";
 
 const getCurrencySymbol = (currency: string | null) => {
@@ -15,6 +17,8 @@ const getCurrencySymbol = (currency: string | null) => {
     case "JPY": return "¥";
     case "CAD": return "C$";
     case "AUD": return "A$";
+    case "TZS": return "TSh";
+    case "KES": return "KSh";
     default: return "$";
   }
 };
@@ -25,6 +29,7 @@ export const FinanceView = () => {
   const { data: expenses, isLoading: expensesLoading } = useExpenses();
   const { data: savingsGoals } = useSavingsGoals();
   const deleteExpense = useDeleteExpense();
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   const currencySymbol = getCurrencySymbol(settings?.currency);
   const monthlyIncome = settings?.monthly_income || 0;
@@ -380,7 +385,11 @@ export const FinanceView = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {expenses.map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 group">
+                    <div 
+                      key={expense.id} 
+                      className="flex items-center justify-between py-2 border-b border-border last:border-0 group cursor-pointer hover:bg-secondary/30 -mx-2 px-2 rounded-lg transition-colors"
+                      onClick={() => setEditingExpense(expense)}
+                    >
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm">{expense.title}</span>
@@ -396,14 +405,30 @@ export const FinanceView = () => {
                           </div>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
-                        onClick={() => deleteExpense.mutate(expense.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-1 ml-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingExpense(expense);
+                          }}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteExpense.mutate(expense.id);
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </CardContent>
@@ -429,7 +454,11 @@ export const FinanceView = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {expenses.slice(0, 5).map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                    <div 
+                      key={expense.id} 
+                      className="flex items-center justify-between py-2 border-b border-border last:border-0 cursor-pointer"
+                      onClick={() => setEditingExpense(expense)}
+                    >
                       <div>
                         <p className="font-medium text-sm">{expense.title}</p>
                         <p className="text-xs text-muted-foreground">{categoryLabels[expense.category] || expense.category}</p>
@@ -440,7 +469,10 @@ export const FinanceView = () => {
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          onClick={() => deleteExpense.mutate(expense.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteExpense.mutate(expense.id);
+                          }}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -452,6 +484,15 @@ export const FinanceView = () => {
             </motion.div>
           )}
         </>
+      )}
+
+      {/* Edit Expense Dialog */}
+      {editingExpense && (
+        <EditExpenseDialog
+          expense={editingExpense}
+          open={!!editingExpense}
+          onOpenChange={(open) => !open && setEditingExpense(null)}
+        />
       )}
     </div>
   );
