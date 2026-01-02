@@ -379,18 +379,31 @@ export const FinanceView = () => {
                   </AddExpenseDialog>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {Object.entries(expensesByCategory).map(([category, amount]) => (
-                    <div key={category} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{categoryLabels[category] || category}</span>
-                        <span className="font-medium">{currencySymbol}{amount.toLocaleString()}</span>
+                  {expenses.map((expense) => (
+                    <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 group">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm">{expense.title}</span>
+                          <span className="font-semibold">{currencySymbol}{expense.amount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs text-muted-foreground">{categoryLabels[expense.category] || expense.category}</span>
+                          <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full ${categoryColors[expense.category] || "bg-muted-foreground"} rounded-full`}
+                              style={{ width: `${totalExpenses > 0 ? (expense.amount / totalExpenses) * 100 : 0}%` }}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${categoryColors[category] || "bg-muted-foreground"} rounded-full`}
-                          style={{ width: `${totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0}%` }}
-                        />
-                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+                        onClick={() => deleteExpense.mutate(expense.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   ))}
                 </CardContent>
