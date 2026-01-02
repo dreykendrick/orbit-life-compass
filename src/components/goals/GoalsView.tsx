@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Target, TrendingUp, Calendar, Plus, Sparkles, DollarSign, BookOpen, Dumbbell, ChevronRight, Heart, Briefcase, User, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useGoals, useDeleteGoal } from "@/hooks/useGoals";
+import { useGoals, useDeleteGoal, Goal } from "@/hooks/useGoals";
 import { AddGoalDialog } from "./AddGoalDialog";
+import { EditGoalDialog } from "./EditGoalDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 
@@ -30,11 +32,17 @@ export const GoalsView = () => {
   const isMobile = useIsMobile();
   const { data: goals, isLoading } = useGoals();
   const deleteGoal = useDeleteGoal();
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm("Are you sure you want to delete this goal?")) {
       await deleteGoal.mutateAsync(id);
     }
+  };
+
+  const handleCardClick = (goal: Goal) => {
+    setEditingGoal(goal);
   };
 
   const calculateProgress = (current: number | null, target: number | null) => {
@@ -145,7 +153,11 @@ export const GoalsView = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
                 >
-                  <Card variant="interactive" className="h-full active:scale-[0.98] transition-transform group">
+                  <Card 
+                    variant="interactive" 
+                    className="h-full active:scale-[0.98] transition-transform group cursor-pointer"
+                    onClick={() => handleCardClick(goal)}
+                  >
                     <CardContent className="p-4 md:p-6">
                       <div className="flex items-start gap-3 md:gap-4">
                         <div className={`p-2.5 md:p-3 rounded-xl ${colors.bg} shrink-0`}>
@@ -219,7 +231,7 @@ export const GoalsView = () => {
                               variant="ghost"
                               size="sm"
                               className="text-muted-foreground hover:text-destructive mt-2 -ml-2"
-                              onClick={() => handleDelete(goal.id)}
+                              onClick={(e) => handleDelete(goal.id, e)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
@@ -233,7 +245,7 @@ export const GoalsView = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="text-muted-foreground hover:text-destructive"
-                                onClick={() => handleDelete(goal.id)}
+                                onClick={(e) => handleDelete(goal.id, e)}
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
                                 Delete
@@ -249,6 +261,15 @@ export const GoalsView = () => {
             })}
           </div>
         </>
+      )}
+
+      {/* Edit Dialog */}
+      {editingGoal && (
+        <EditGoalDialog
+          goal={editingGoal}
+          open={!!editingGoal}
+          onOpenChange={(open) => !open && setEditingGoal(null)}
+        />
       )}
     </div>
   );

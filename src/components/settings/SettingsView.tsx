@@ -63,9 +63,7 @@ export const SettingsView = () => {
         setProfileDialogOpen(true);
         break;
       case "security":
-        toast.info("Security settings", {
-          description: "Password management will be available soon. Your account is secured with Lovable Cloud authentication.",
-        });
+        toast.info("Password management coming soon");
         break;
       case "notifications":
         toast.info("Notifications", {
