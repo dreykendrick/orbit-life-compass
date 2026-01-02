@@ -213,6 +213,19 @@ export const GoalsView = () => {
                             </div>
                           )}
 
+                          {/* Delete button for mobile */}
+                          {isMobile && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-muted-foreground hover:text-destructive mt-2 -ml-2"
+                              onClick={() => handleDelete(goal.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          )}
+
                           {/* Delete button on hover (desktop) */}
                           {!isMobile && (
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-3">

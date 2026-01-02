@@ -176,6 +176,15 @@ export const RoutinesView = () => {
                               </button>
                             </div>
                           )}
+
+                          {isMobile && (
+                            <button 
+                              className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
+                              onClick={() => handleDelete(routine.id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
