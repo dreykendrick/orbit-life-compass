@@ -1,7 +1,7 @@
+import { forwardRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, Sun, Moon, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useStreak } from "@/hooks/useTaskCompletions";
@@ -12,7 +12,7 @@ interface MobileHeaderProps {
   setActiveTab?: (tab: string) => void;
 }
 
-export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
+export const MobileHeader = forwardRef<HTMLElement, MobileHeaderProps>(({ title, setActiveTab }, ref) => {
   const [isDark, setIsDark] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
@@ -67,6 +67,7 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
 
   return (
     <motion.header
+      ref={ref}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border safe-area-top"
@@ -161,4 +162,6 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
       </div>
     </motion.header>
   );
-};
+});
+
+MobileHeader.displayName = "MobileHeader";
