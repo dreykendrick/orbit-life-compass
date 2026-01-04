@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
@@ -22,10 +21,9 @@ const navItems = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-export const MobileNav = forwardRef<HTMLElement, MobileNavProps>(({ activeTab, setActiveTab }, ref) => {
+export const MobileNav = ({ activeTab, setActiveTab }: MobileNavProps) => {
   return (
     <motion.nav
-      ref={ref}
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border safe-area-bottom"
@@ -69,6 +67,4 @@ export const MobileNav = forwardRef<HTMLElement, MobileNavProps>(({ activeTab, s
       </div>
     </motion.nav>
   );
-});
-
-MobileNav.displayName = "MobileNav";
+};
