@@ -4,14 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus, Loader2 } from "lucide-react";
 import { useCreateGoal } from "@/hooks/useGoals";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { GoalFormFields } from "./GoalFormFields";
 
 interface AddGoalDialogProps {
   children?: React.ReactNode;
 }
+
+const categoryTitlePlaceholders: Record<string, string> = {
+  finance: "e.g., Save $5,000 emergency fund",
+  fitness: "e.g., Run a marathon, Lose 10kg",
+  learning: "e.g., Learn Spanish, Complete Python course",
+  health: "e.g., Quit smoking, Sleep 8 hours daily",
+  career: "e.g., Get promoted, Learn new skill",
+  personal: "e.g., Read 50 books this year",
+};
 
 export const AddGoalDialog = ({ children }: AddGoalDialogProps) => {
   const [open, setOpen] = useState(false);
@@ -25,6 +34,15 @@ export const AddGoalDialog = ({ children }: AddGoalDialogProps) => {
   
   const isMobile = useIsMobile();
   const createGoal = useCreateGoal();
+
+  const handleCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
+    // Reset form fields when category changes
+    setDescription("");
+    setTargetValue("");
+    setCurrentValue("0");
+    setDailyAction("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,97 +79,52 @@ export const AddGoalDialog = ({ children }: AddGoalDialogProps) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Goal</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select value={category} onValueChange={handleCategoryChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="finance">💰 Finance</SelectItem>
+                <SelectItem value="fitness">💪 Fitness</SelectItem>
+                <SelectItem value="learning">📚 Learning</SelectItem>
+                <SelectItem value="health">❤️ Health</SelectItem>
+                <SelectItem value="career">💼 Career</SelectItem>
+                <SelectItem value="personal">🎯 Personal</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="title">Goal Title</Label>
             <Input
               id="title"
-              placeholder="e.g., Save $5,000 emergency fund"
+              placeholder={categoryTitlePlaceholders[category] || "Enter your goal"}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="finance">Finance</SelectItem>
-                <SelectItem value="fitness">Fitness</SelectItem>
-                <SelectItem value="learning">Learning</SelectItem>
-                <SelectItem value="health">Health</SelectItem>
-                <SelectItem value="career">Career</SelectItem>
-                <SelectItem value="personal">Personal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
-            <Textarea
-              id="description"
-              placeholder="What do you want to achieve?"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentValue">Current Progress</Label>
-              <Input
-                id="currentValue"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0"
-                value={currentValue}
-                onChange={(e) => setCurrentValue(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="targetValue">Target Value</Label>
-              <Input
-                id="targetValue"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g., 5000"
-                value={targetValue}
-                onChange={(e) => setTargetValue(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="targetDate">Target Date (optional)</Label>
-            <Input
-              id="targetDate"
-              type="date"
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dailyAction">Daily Action (optional)</Label>
-            <Input
-              id="dailyAction"
-              placeholder="e.g., Save $20/day"
-              value={dailyAction}
-              onChange={(e) => setDailyAction(e.target.value)}
-            />
-          </div>
+          <GoalFormFields
+            category={category}
+            description={description}
+            setDescription={setDescription}
+            targetValue={targetValue}
+            setTargetValue={setTargetValue}
+            currentValue={currentValue}
+            setCurrentValue={setCurrentValue}
+            targetDate={targetDate}
+            setTargetDate={setTargetDate}
+            dailyAction={dailyAction}
+            setDailyAction={setDailyAction}
+          />
 
           <div className="flex gap-3 pt-4">
             <Button 
