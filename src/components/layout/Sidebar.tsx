@@ -9,10 +9,12 @@ import {
   ChevronLeft,
   Sparkles,
   Sun,
-  Moon
+  Moon,
+  Flame
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useStreak } from "@/hooks/useTaskCompletions";
 
 interface SidebarProps {
   activeTab: string;
@@ -32,6 +34,7 @@ const navItems = [
 export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }: SidebarProps) => {
   const [isDark, setIsDark] = useState(true);
   const isMobile = useIsMobile();
+  const { data: streak = 0 } = useStreak();
 
   useEffect(() => {
     const saved = localStorage.getItem("orbit-theme");
@@ -153,10 +156,13 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
           )}
         </button>
 
-        {!isCollapsed && (
+        {!isCollapsed && streak > 0 && (
           <div className="px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
-            <p className="text-xs text-muted-foreground mb-1">Current streak</p>
-            <p className="text-2xl font-bold text-primary">7 days</p>
+            <div className="flex items-center gap-2 mb-1">
+              <Flame className="w-4 h-4 text-orange-500" />
+              <p className="text-xs text-muted-foreground">Current streak</p>
+            </div>
+            <p className="text-2xl font-bold text-primary">{streak} day{streak !== 1 ? 's' : ''}</p>
           </div>
         )}
       </div>
