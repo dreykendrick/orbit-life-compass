@@ -8,6 +8,7 @@ import { useFinanceSettings, useExpenses, useSavingsGoals, useDeleteExpense, Exp
 import { UpdateFinanceDialog } from "./UpdateFinanceDialog";
 import { AddExpenseDialog } from "./AddExpenseDialog";
 import { EditExpenseDialog } from "./EditExpenseDialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { differenceInDays } from "date-fns";
 
 const getCurrencySymbol = (currency: string | null) => {
@@ -30,6 +31,7 @@ export const FinanceView = () => {
   const { data: savingsGoals } = useSavingsGoals();
   const deleteExpense = useDeleteExpense();
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [showExpensesList, setShowExpensesList] = useState(false);
 
   const currencySymbol = getCurrencySymbol(settings?.currency);
   const monthlyIncome = settings?.monthly_income || 0;
@@ -166,8 +168,9 @@ export const FinanceView = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
                 className="shrink-0 w-40"
+                onClick={() => setShowExpensesList(true)}
               >
-                <Card variant="default">
+                <Card variant="interactive" className="cursor-pointer active:scale-[0.98] transition-transform">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="p-1.5 rounded-lg bg-warning/10">
@@ -176,7 +179,10 @@ export const FinanceView = () => {
                       <span className="text-xs text-muted-foreground">Expenses</span>
                     </div>
                     <p className="text-2xl font-bold">{currencySymbol}{Math.round(totalExpenses).toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{expensePercent}% of income</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs text-muted-foreground">{expensePercent}% of income</p>
+                      <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -231,14 +237,18 @@ export const FinanceView = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
+                onClick={() => setShowExpensesList(true)}
               >
-                <Card variant="default" className="h-full">
+                <Card variant="interactive" className="h-full cursor-pointer hover:border-warning/50 transition-colors">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-muted-foreground">Fixed Expenses</p>
                         <p className="text-3xl font-bold mt-1">{currencySymbol}{Math.round(totalExpenses).toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground mt-2">{expensePercent}% of income</p>
+                        <div className="flex items-center gap-1 mt-2 text-warning text-sm">
+                          <span>{expensePercent}% of income</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
                       </div>
                       <div className="p-4 rounded-xl bg-warning/10">
                         <CreditCard className="w-6 h-6 text-warning" />
@@ -494,6 +504,83 @@ export const FinanceView = () => {
           onOpenChange={(open) => !open && setEditingExpense(null)}
         />
       )}
+
+      {/* Expenses List Sheet */}
+      <Sheet open={showExpensesList} onOpenChange={setShowExpensesList}>
+        <SheetContent side={isMobile ? "bottom" : "right"} className={isMobile ? "h-[85vh]" : ""}>
+          <SheetHeader>
+            <SheetTitle className="flex items-center justify-between">
+              <span>All Expenses</span>
+              <AddExpenseDialog>
+                <Button size="sm" className="gap-1">
+                  <Plus className="w-4 h-4" />
+                  Add
+                </Button>
+              </AddExpenseDialog>
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 space-y-2 overflow-y-auto max-h-[calc(100%-80px)]">
+            {expenses && expenses.length > 0 ? (
+              expenses.map((expense) => (
+                <div 
+                  key={expense.id} 
+                  className="flex items-center justify-between py-3 px-3 border border-border rounded-lg hover:bg-secondary/30 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setShowExpensesList(false);
+                    setTimeout(() => setEditingExpense(expense), 150);
+                  }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{expense.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-muted-foreground">{categoryLabels[expense.category] || expense.category}</span>
+                      {expense.is_fixed && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">Fixed</span>
+                      )}
+                      {expense.frequency && expense.frequency !== "monthly" && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground capitalize">{expense.frequency}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-semibold">{currencySymbol}{expense.amount.toLocaleString()}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteExpense.mutate(expense.id);
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <CreditCard className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground text-sm">No expenses yet</p>
+                <AddExpenseDialog>
+                  <Button variant="outline" size="sm" className="mt-4">
+                    Add your first expense
+                  </Button>
+                </AddExpenseDialog>
+              </div>
+            )}
+          </div>
+          
+          {expenses && expenses.length > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Total Monthly</span>
+                <span className="font-bold text-lg">{currencySymbol}{Math.round(totalExpenses).toLocaleString()}</span>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
