@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Menu, Sun, Moon, Sparkles } from "lucide-react";
+import { Menu, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useStreak } from "@/hooks/useTaskCompletions";
 import { toast } from "sonner";
+import orbitLogo from "@/assets/orbit-logo.png";
 
 interface MobileHeaderProps {
   title: string;
@@ -74,9 +75,7 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
       <div className="flex items-center justify-between px-4 h-14">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary-foreground" />
-          </div>
+          <img src={orbitLogo} alt="ORBIT" className="w-8 h-8 rounded-lg object-cover" />
           <span className="font-bold text-lg">{title}</span>
         </div>
 
