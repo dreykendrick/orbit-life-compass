@@ -7,7 +7,6 @@ import {
   Wallet, 
   Settings,
   ChevronLeft,
-  Sparkles,
   Sun,
   Moon,
   Flame
@@ -15,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStreak } from "@/hooks/useTaskCompletions";
+import orbitLogo from "@/assets/orbit-logo.png";
 
 interface SidebarProps {
   activeTab: string;
@@ -70,9 +70,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
           whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src={orbitLogo} alt="ORBIT" className="w-10 h-10 rounded-xl object-cover" />
           </div>
           {!isCollapsed && (
             <span className="text-xl font-bold text-foreground">ORBIT</span>
