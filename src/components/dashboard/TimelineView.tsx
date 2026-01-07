@@ -1,6 +1,6 @@
-import { forwardRef } from "react";
-import { motion } from "framer-motion";
-import { Check, Clock, AlertCircle, ChevronRight, Plus } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Clock, AlertCircle, ChevronRight, ChevronDown, Plus, Bell, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRoutines } from "@/hooks/useRoutines";
@@ -20,11 +20,16 @@ const formatDuration = (minutes: number) => {
 export const TimelineView = () => {
   const isMobile = useIsMobile();
   const { data: routines, isLoading } = useRoutines();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Filter to active routines and sort by start time
   const todayRoutines = routines
     ?.filter(r => r.is_active)
     ?.sort((a, b) => a.start_time.localeCompare(b.start_time)) || [];
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
 
   return (
     <div className="space-y-1">
@@ -121,6 +126,8 @@ export const TimelineView = () => {
                 },
               }[status];
               
+              const isExpanded = expandedId === routine.id;
+
               return (
                 <motion.div
                   key={routine.id}
@@ -138,10 +145,14 @@ export const TimelineView = () => {
                   </div>
 
                   {/* Task card */}
-                  <div className={cn(
-                    "flex-1 p-3 md:p-4 rounded-xl border transition-all duration-200 active:scale-[0.98]",
-                    styles.card
-                  )}>
+                  <div 
+                    onClick={() => toggleExpand(routine.id)}
+                    className={cn(
+                      "flex-1 p-3 md:p-4 rounded-xl border transition-all duration-200 cursor-pointer",
+                      styles.card,
+                      "hover:shadow-md active:scale-[0.98]"
+                    )}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5 md:mb-1">
@@ -170,11 +181,46 @@ export const TimelineView = () => {
                             {styles.icon}
                           </div>
                         )}
-                        {isMobile && (
-                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                        )}
+                        <motion.div
+                          animate={{ rotate: isExpanded ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </motion.div>
                       </div>
                     </div>
+
+                    {/* Expanded Details */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pt-3 mt-3 border-t border-border space-y-2">
+                            <div className="flex items-start gap-2">
+                              <FileText className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div>
+                                <p className="text-xs font-medium text-muted-foreground mb-1">Description</p>
+                                <p className="text-sm">
+                                  {routine.description || <span className="italic text-muted-foreground">No description added</span>}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {routine.alarm_enabled && (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Bell className="w-4 h-4" />
+                                <span>Alarm enabled</span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               );
