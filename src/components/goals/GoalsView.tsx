@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Target, TrendingUp, Calendar, Plus, Sparkles, DollarSign, BookOpen, Dumbbell, ChevronRight, Heart, Briefcase, User, Trash2 } from "lucide-react";
+import { Target, TrendingUp, Calendar, Plus, Sparkles, DollarSign, BookOpen, Dumbbell, ChevronRight, Heart, Briefcase, User, Trash2, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoals, useDeleteGoal, Goal } from "@/hooks/useGoals";
 import { AddGoalDialog } from "./AddGoalDialog";
 import { EditGoalDialog } from "./EditGoalDialog";
+import { QuickProgressDialog } from "./QuickProgressDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 
@@ -33,6 +34,7 @@ export const GoalsView = () => {
   const { data: goals, isLoading } = useGoals();
   const deleteGoal = useDeleteGoal();
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [quickProgressGoal, setQuickProgressGoal] = useState<Goal | null>(null);
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -42,6 +44,11 @@ export const GoalsView = () => {
   };
 
   const handleCardClick = (goal: Goal) => {
+    setQuickProgressGoal(goal);
+  };
+
+  const handleEditClick = (goal: Goal, e: React.MouseEvent) => {
+    e.stopPropagation();
     setEditingGoal(goal);
   };
 
@@ -242,6 +249,14 @@ export const GoalsView = () => {
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="text-muted-foreground hover:text-foreground h-8 px-2"
+                              onClick={(e) => handleEditClick(goal, e)}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="text-muted-foreground hover:text-destructive h-8 px-2"
                               onClick={(e) => handleDelete(goal.id, e)}
                             >
@@ -257,6 +272,15 @@ export const GoalsView = () => {
             })}
           </div>
         </>
+      )}
+
+      {/* Quick Progress Dialog */}
+      {quickProgressGoal && (
+        <QuickProgressDialog
+          goal={quickProgressGoal}
+          open={!!quickProgressGoal}
+          onOpenChange={(open) => !open && setQuickProgressGoal(null)}
+        />
       )}
 
       {/* Edit Dialog */}
