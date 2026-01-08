@@ -9,6 +9,7 @@ import { FinanceView } from "@/components/finance/FinanceView";
 import { SettingsView } from "@/components/settings/SettingsView";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const tabTitles: Record<string, string> = {
   dashboard: "ORBIT",
@@ -22,6 +23,9 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Initialize native notifications for alarm sync
+  useNotifications();
 
   const renderContent = () => {
     switch (activeTab) {
