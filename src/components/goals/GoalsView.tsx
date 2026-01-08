@@ -155,30 +155,30 @@ export const GoalsView = () => {
                 >
                   <Card 
                     variant="interactive" 
-                    className="h-full active:scale-[0.98] transition-transform group cursor-pointer"
+                    className="h-full active:scale-[0.98] transition-all group cursor-pointer hover:ring-2 hover:ring-primary/20 hover:shadow-lg"
                     onClick={() => handleCardClick(goal)}
                   >
                     <CardContent className="p-4 md:p-6">
                       <div className="flex items-start gap-3 md:gap-4">
-                        <div className={`p-2.5 md:p-3 rounded-xl ${colors.bg} shrink-0`}>
+                        <div className={`p-2.5 md:p-3 rounded-xl ${colors.bg} shrink-0 group-hover:scale-110 transition-transform`}>
                           <Icon className={`w-5 h-5 ${colors.text}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-sm md:text-base truncate">{goal.title}</h3>
+                              <h3 className="font-semibold text-sm md:text-base truncate group-hover:text-primary transition-colors">{goal.title}</h3>
                               {goal.daily_action && (
                                 <p className="text-xs text-muted-foreground">{goal.daily_action}</p>
                               )}
                             </div>
                             <div className="flex items-center gap-1">
                               <span className={`font-bold text-sm md:text-base ${colors.text}`}>{progress}%</span>
-                              {isMobile && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                             </div>
                           </div>
                           
-                          {/* Progress bar */}
-                          <div className="h-1.5 md:h-2 bg-secondary rounded-full overflow-hidden mt-3">
+                          {/* Progress bar - clickable area */}
+                          <div className="h-2 md:h-2.5 bg-secondary rounded-full overflow-hidden mt-3 relative">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${progress}%` }}
@@ -225,33 +225,29 @@ export const GoalsView = () => {
                             </div>
                           )}
 
-                          {/* Delete button for mobile */}
-                          {isMobile && (
+                          {/* Action buttons */}
+                          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="flex-1 text-xs h-8"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCardClick(goal);
+                              }}
+                            >
+                              <TrendingUp className="w-3.5 h-3.5 mr-1.5" />
+                              Update Progress
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-muted-foreground hover:text-destructive mt-2 -ml-2"
+                              className="text-muted-foreground hover:text-destructive h-8 px-2"
                               onClick={(e) => handleDelete(goal.id, e)}
                             >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
+                              <Trash2 className="w-4 h-4" />
                             </Button>
-                          )}
-
-                          {/* Delete button on hover (desktop) */}
-                          {!isMobile && (
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-3">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-muted-foreground hover:text-destructive"
-                                onClick={(e) => handleDelete(goal.id, e)}
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                            </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </CardContent>
