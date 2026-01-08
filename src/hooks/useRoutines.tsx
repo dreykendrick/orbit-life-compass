@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
+import { notificationService } from "@/services/NotificationService";
 
 export interface Routine {
   id: string;
@@ -49,6 +50,19 @@ export const useCreateRoutine = () => {
         .single();
 
       if (error) throw error;
+      
+      // Schedule alarm if enabled
+      if (data.alarm_enabled && data.is_active) {
+        await notificationService.scheduleRoutineAlarm({
+          id: data.id,
+          title: data.title,
+          description: data.description || undefined,
+          startTime: data.start_time,
+          frequency: data.frequency,
+          customDays: data.custom_days || undefined,
+        });
+      }
+      
       return data;
     },
     onSuccess: () => {
@@ -75,6 +89,21 @@ export const useUpdateRoutine = () => {
         .single();
 
       if (error) throw error;
+      
+      // Update alarm schedule
+      if (data.alarm_enabled && data.is_active) {
+        await notificationService.scheduleRoutineAlarm({
+          id: data.id,
+          title: data.title,
+          description: data.description || undefined,
+          startTime: data.start_time,
+          frequency: data.frequency,
+          customDays: data.custom_days || undefined,
+        });
+      } else {
+        await notificationService.cancelRoutineAlarm(data.id);
+      }
+      
       return data;
     },
     onSuccess: () => {
@@ -93,6 +122,9 @@ export const useDeleteRoutine = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Cancel alarm before deleting
+      await notificationService.cancelRoutineAlarm(id);
+      
       const { error } = await supabase
         .from("routines")
         .delete()
