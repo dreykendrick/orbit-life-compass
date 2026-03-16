@@ -5,7 +5,7 @@ import {
   Target, 
   Clock, 
   Wallet, 
-  Settings,
+  Settings
   ChevronLeft,
   Sun,
   Moon,
