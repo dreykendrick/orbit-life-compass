@@ -126,6 +126,11 @@
     font-family: 'Outfit', system-ui, sans-serif;
   }
 
+  /* Force dark mode */
+  html {
+    color-scheme: dark;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;

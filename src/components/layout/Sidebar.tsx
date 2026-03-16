@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
@@ -7,8 +7,6 @@ import {
   Wallet, 
   Settings,
   ChevronLeft,
-  Sun,
-  Moon,
   Flame
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,24 +30,12 @@ const navItems = [
 ];
 
 export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }: SidebarProps) => {
-  const [isDark, setIsDark] = useState(true);
   const isMobile = useIsMobile();
   const { data: streak = 0 } = useStreak();
 
   useEffect(() => {
-    const saved = localStorage.getItem("orbit-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const shouldBeDark = saved ? saved === "dark" : prefersDark;
-    setIsDark(shouldBeDark);
-    document.documentElement.classList.toggle("dark", shouldBeDark);
+    document.documentElement.classList.add("dark");
   }, []);
-
-  const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle("dark", newIsDark);
-    localStorage.setItem("orbit-theme", newIsDark ? "dark" : "light");
-  };
 
   // Don't render sidebar on mobile
   if (isMobile) return null;
@@ -136,28 +122,10 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
 
       {/* Bottom section */}
       <div className="p-4 border-t border-sidebar-border space-y-3">
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors",
-            "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-          )}
-        >
-          {isDark ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
-          {!isCollapsed && (
-            <span className="font-medium">{isDark ? "Light Mode" : "Dark Mode"}</span>
-          )}
-        </button>
-
         {!isCollapsed && streak > 0 && (
           <div className="px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
             <div className="flex items-center gap-2 mb-1">
-              <Flame className="w-4 h-4 text-orange-500" />
+              <Flame className="w-4 h-4 text-warning" />
               <p className="text-xs text-muted-foreground">Current streak</p>
             </div>
             <p className="text-2xl font-bold text-primary">{streak} day{streak !== 1 ? 's' : ''}</p>
