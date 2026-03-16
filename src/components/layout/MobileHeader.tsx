@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Menu, Sun, Moon } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -14,24 +14,14 @@ interface MobileHeaderProps {
 }
 
 export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
-  const [isDark, setIsDark] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: streak = 0 } = useStreak();
 
   useEffect(() => {
-    const saved = localStorage.getItem("orbit-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setIsDark(saved ? saved === "dark" : prefersDark);
+    document.documentElement.classList.add("dark");
   }, []);
-
-  const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle("dark", newIsDark);
-    localStorage.setItem("orbit-theme", newIsDark ? "dark" : "light");
-  };
 
   const handleNavigation = (tab: string) => {
     if (setActiveTab) {
@@ -81,17 +71,6 @@ export const MobileHeader = ({ title, setActiveTab }: MobileHeaderProps) => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors active:scale-95"
-          >
-            {isDark ? (
-              <Sun className="w-5 h-5 text-muted-foreground" />
-            ) : (
-              <Moon className="w-5 h-5 text-muted-foreground" />
-            )}
-          </button>
-          
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <button className="p-2 hover:bg-secondary rounded-lg transition-colors active:scale-95">
