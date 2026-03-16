@@ -3,7 +3,11 @@ import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
   Target, 
+  CheckSquare,
   Clock, 
+  Zap,
+  Bell,
+  BookOpen,
   Wallet, 
   Settings,
   ChevronLeft,
@@ -24,7 +28,11 @@ interface SidebarProps {
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "goals", label: "Goals", icon: Target },
+  { id: "tasks", label: "Tasks", icon: CheckSquare },
   { id: "routines", label: "Routines", icon: Clock },
+  { id: "focus", label: "Focus", icon: Zap },
+  { id: "reminders", label: "Reminders", icon: Bell },
+  { id: "reflections", label: "Reflect", icon: BookOpen },
   { id: "finance", label: "Finance", icon: Wallet },
   { id: "settings", label: "Settings", icon: Settings },
 ];
@@ -37,7 +45,6 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
     document.documentElement.classList.add("dark");
   }, []);
 
-  // Don't render sidebar on mobile
   if (isMobile) return null;
 
   return (
@@ -51,67 +58,43 @@ export const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
     >
       {/* Logo */}
       <div className="p-6 flex items-center justify-between">
-        <motion.div 
-          className="flex items-center gap-3"
-          whileHover={{ scale: 1.02 }}
-        >
+        <motion.div className="flex items-center gap-3" whileHover={{ scale: 1.02 }}>
           <div className="relative w-10 h-10 flex items-center justify-center">
             <img src={orbitLogo} alt="ORBIT" className="w-10 h-10 rounded-xl object-cover" />
           </div>
-          {!isCollapsed && (
-            <span className="text-xl font-bold text-foreground">ORBIT</span>
-          )}
+          {!isCollapsed && <span className="text-xl font-bold text-foreground">ORBIT</span>}
         </motion.div>
-        
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
-        >
-          <ChevronLeft className={cn(
-            "w-4 h-4 text-muted-foreground transition-transform duration-300",
-            isCollapsed && "rotate-180"
-          )} />
+        <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors">
+          <ChevronLeft className={cn("w-4 h-4 text-muted-foreground transition-transform duration-300", isCollapsed && "rotate-180")} />
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4">
-        <ul className="space-y-1">
+      <nav className="flex-1 px-3 py-2 overflow-y-auto scrollbar-hide">
+        <ul className="space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
-            
             return (
               <li key={item.id}>
                 <button
                   onClick={() => setActiveTab(item.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
-                    isActive 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+                    "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative",
+                    isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
-                  <Icon className={cn(
-                    "w-5 h-5 transition-transform duration-200",
-                    isActive && "text-primary"
-                  )} />
-                  {!isCollapsed && (
-                    <span className="font-medium">{item.label}</span>
-                  )}
+                  <Icon className={cn("w-5 h-5 transition-transform duration-200", isActive && "text-primary")} />
+                  {!isCollapsed && <span className="font-medium text-sm">{item.label}</span>}
                   {isActive && !isCollapsed && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="ml-auto w-2 h-2 bg-primary rounded-full"
-                    />
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto w-2 h-2 bg-primary rounded-full" />
                   )}
                 </button>
               </li>
