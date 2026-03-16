@@ -6,10 +6,9 @@ import {
   Clock, 
   Wallet, 
   Settings
-  ChevronLeft,
-  Sun,
-  Moon,
-  Flame
+} from "lucide-react";
+import { Flame } from "lucide-react";
+import { ChevronLeft 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
