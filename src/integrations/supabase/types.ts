@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_reflections: {
+        Row: {
+          accomplishments: string | null
+          challenges: string | null
+          created_at: string
+          gratitude: string | null
+          id: string
+          mood: number | null
+          reflection_date: string
+          tomorrow_goals: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accomplishments?: string | null
+          challenges?: string | null
+          created_at?: string
+          gratitude?: string | null
+          id?: string
+          mood?: number | null
+          reflection_date: string
+          tomorrow_goals?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accomplishments?: string | null
+          challenges?: string | null
+          created_at?: string
+          gratitude?: string | null
+          id?: string
+          mood?: number | null
+          reflection_date?: string
+          tomorrow_goals?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -74,6 +113,63 @@ export type Database = {
         }
         Relationships: []
       }
+      focus_sessions: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          goal_id: string | null
+          id: string
+          notes: string | null
+          start_time: string
+          status: string
+          task_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number
+          goal_id?: string | null
+          id?: string
+          notes?: string | null
+          start_time: string
+          status?: string
+          task_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          goal_id?: string | null
+          id?: string
+          notes?: string | null
+          start_time?: string
+          status?: string
+          task_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_sessions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "focus_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           category: string
@@ -119,6 +215,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          linked_id: string | null
+          linked_type: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          linked_id?: string | null
+          linked_type?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          linked_id?: string | null
+          linked_type?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -146,6 +278,51 @@ export type Database = {
           theme_preference?: string | null
           timezone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          custom_days: number[] | null
+          description: string | null
+          id: string
+          is_active: boolean
+          linked_id: string | null
+          linked_type: string | null
+          reminder_time: string
+          repeat_pattern: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_days?: number[] | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          linked_id?: string | null
+          linked_type?: string | null
+          reminder_time: string
+          repeat_pattern?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_days?: number[] | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          linked_id?: string | null
+          linked_type?: string | null
+          reminder_time?: string
+          repeat_pattern?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -261,6 +438,56 @@ export type Database = {
             columns: ["routine_id"]
             isOneToOne: false
             referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          created_at: string
+          description: string | null
+          due_date: string | null
+          goal_id: string | null
+          id: string
+          priority: string
+          scheduled_date: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          goal_id?: string | null
+          id?: string
+          priority?: string
+          scheduled_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          goal_id?: string | null
+          id?: string
+          priority?: string
+          scheduled_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
             referencedColumns: ["id"]
           },
         ]
