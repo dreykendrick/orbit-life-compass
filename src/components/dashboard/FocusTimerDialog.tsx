@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, Pause, RotateCcw, CheckCircle } from "lucide-react";
+import { PlayCircle, Pause, RotateCcw, CheckCircle, BellOff } from "lucide-react";
 import { toast } from "sonner";
+import { useDnd } from "@/hooks/useDnd";
 
 interface FocusTimerDialogProps {
   children?: React.ReactNode;
@@ -14,6 +15,7 @@ export const FocusTimerDialog = ({ children }: FocusTimerDialogProps) => {
   const [isRunning, setIsRunning] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(25);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { isDnd, enableDnd, disableDnd } = useDnd();
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
@@ -22,6 +24,7 @@ export const FocusTimerDialog = ({ children }: FocusTimerDialogProps) => {
       }, 1000);
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
+      disableDnd();
       toast.success("Focus session complete! Great work!");
     }
 
@@ -30,7 +33,17 @@ export const FocusTimerDialog = ({ children }: FocusTimerDialogProps) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, disableDnd]);
+
+  // Auto-enable DnD while timer runs; disable when stopped/dialog closes
+  useEffect(() => {
+    if (isRunning) enableDnd("Focus timer");
+    else if (isDnd) disableDnd();
+    return () => {
+      if (isDnd) disableDnd();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning]);
 
   const toggleTimer = () => {
     setIsRunning(!isRunning);
