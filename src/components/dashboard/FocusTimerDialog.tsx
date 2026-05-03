@@ -109,6 +109,11 @@ export const FocusTimerDialog = ({ children }: FocusTimerDialogProps) => {
               <span className="text-sm text-muted-foreground mt-1">
                 {isRunning ? "Focusing..." : "Ready"}
               </span>
+              {isRunning && isDnd && (
+                <span className="text-xs text-primary mt-1 flex items-center gap-1">
+                  <BellOff className="w-3 h-3" /> Do Not Disturb
+                </span>
+              )}
             </div>
           </div>
 
