@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useReminders, useDeleteReminder, useUpdateReminder, Reminder } from "@/hooks/useReminders";
 import { AddReminderDialog } from "./AddReminderDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NotificationStatusCard } from "@/components/notifications/NotificationStatusCard";
 
 const linkedIcons: Record<string, React.ReactNode> = {
   goal: <Target className="w-3 h-3" />,
@@ -40,6 +41,8 @@ export const RemindersView = () => {
         </div>
         <AddReminderDialog />
       </motion.div>
+
+      <NotificationStatusCard />
 
       {isLoading && (
         <div className="space-y-3">{[1, 2].map((i) => <Card key={i}><CardContent className="p-4"><Skeleton className="h-12 w-full" /></CardContent></Card>)}</div>
