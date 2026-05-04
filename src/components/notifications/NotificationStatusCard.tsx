@@ -6,33 +6,53 @@ import { desktopNotificationService } from "@/services/DesktopNotificationServic
 import { useDnd } from "@/hooks/useDnd";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
 
 export const NotificationStatusCard = () => {
+  const isNative = Capacitor.isNativePlatform();
+  const [granted, setGranted] = useState(() => desktopNotificationService.isGranted);
   const [permission, setPermission] = useState<NotificationPermission>(
-    typeof Notification !== "undefined" ? Notification.permission : "default",
+    !isNative && typeof Notification !== "undefined" ? Notification.permission : "default",
   );
   const { isDnd, enableDnd, disableDnd, reason } = useDnd();
 
   useEffect(() => {
-    if (typeof Notification !== "undefined") {
+    if (!isNative && typeof Notification !== "undefined") {
       setPermission(Notification.permission);
     }
-  }, []);
+    setGranted(desktopNotificationService.isGranted);
+  }, [isNative]);
 
   const requestPermission = async () => {
-    const granted = await desktopNotificationService.initialize();
-    setPermission(typeof Notification !== "undefined" ? Notification.permission : "default");
-    if (granted) {
+    const ok = await desktopNotificationService.initialize();
+    setGranted(ok);
+    if (!isNative && typeof Notification !== "undefined") {
+      setPermission(Notification.permission);
+    }
+    if (ok) {
       toast.success("Notifications enabled!");
       desktopNotificationService.send("✅ Notifications activated", {
         body: "You'll now receive alerts for reminders, tasks, and focus sessions.",
       });
     } else {
-      toast.error("Permission denied. Enable notifications in your browser settings.");
+      toast.error(
+        isNative
+          ? "Permission denied. Enable notifications in your device settings."
+          : "Permission denied. Enable notifications in your browser settings.",
+      );
     }
   };
 
-  const supported = typeof Notification !== "undefined";
+  const supported = isNative || typeof Notification !== "undefined";
+  const isGranted = isNative ? granted : permission === "granted";
+  const label = isNative ? "Mobile notifications" : "Desktop notifications";
+  const statusText = !supported
+    ? "Not supported on this device"
+    : isGranted
+    ? "Active — you'll receive alerts"
+    : !isNative && permission === "denied"
+    ? "Blocked — enable in browser settings"
+    : "Not enabled yet";
 
   return (
     <Card>
@@ -40,31 +60,23 @@ export const NotificationStatusCard = () => {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              {permission === "granted" ? (
+              {permission === "granted" || isGranted ? (
                 <BellRing className="w-4 h-4 text-primary" />
               ) : (
                 <Bell className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium">Desktop notifications</p>
-              <p className="text-xs text-muted-foreground truncate">
-                {!supported
-                  ? "Not supported in this browser"
-                  : permission === "granted"
-                  ? "Active — you'll receive alerts"
-                  : permission === "denied"
-                  ? "Blocked — enable in browser settings"
-                  : "Not enabled yet"}
-              </p>
+              <p className="text-sm font-medium">{label}</p>
+              <p className="text-xs text-muted-foreground truncate">{statusText}</p>
             </div>
           </div>
-          {supported && permission !== "granted" && (
+          {supported && !isGranted && (
             <Button size="sm" onClick={requestPermission} className="shrink-0">
               Enable
             </Button>
           )}
-          {permission === "granted" && (
+          {isGranted && (
             <span className="text-xs text-success flex items-center gap-1 shrink-0">
               <Check className="w-3 h-3" /> On
             </span>
