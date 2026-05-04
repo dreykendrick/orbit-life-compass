@@ -13,6 +13,13 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_icon_config_sample",
       iconColor: "#488AFF",
       sound: "beep.wav"
+    },
+    StatusBar: {
+      // Match app dark background so the status bar blends in instead of clipping content.
+      style: "DARK",
+      backgroundColor: "#0d1117",
+      // Keep the WebView below the status bar (not under it).
+      overlaysWebView: false
     }
   }
 };

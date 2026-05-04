@@ -64,7 +64,7 @@ const Index = () => {
       {isMobile ? (
         <>
           <MobileHeader title={tabTitles[activeTab]} setActiveTab={setActiveTab} onNotificationClick={() => setNotificationsOpen(!notificationsOpen)} />
-          <main className="pt-14 pb-20 px-4">
+          <main className="pt-mobile-header pb-mobile-nav px-4">
             <div className="py-4">{renderContent()}</div>
           </main>
           <MobileNav activeTab={activeTab} setActiveTab={setActiveTab} />
