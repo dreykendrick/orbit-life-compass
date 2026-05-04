@@ -175,12 +175,22 @@
     display: none;
   }
 
-  /* Safe area padding for mobile devices with notches */
+  /* Safe area padding for mobile devices with notches / status bars */
   .safe-area-top {
     padding-top: env(safe-area-inset-top);
   }
 
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Pushes main content below the fixed header (h-14 = 3.5rem) PLUS the device status bar inset */
+  .pt-mobile-header {
+    padding-top: calc(3.5rem + env(safe-area-inset-top));
+  }
+
+  /* Pushes main content above the fixed bottom nav (h-16 ~ 5rem) PLUS device gesture inset */
+  .pb-mobile-nav {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 }
