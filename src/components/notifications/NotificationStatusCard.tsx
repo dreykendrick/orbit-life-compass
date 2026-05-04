@@ -6,33 +6,53 @@ import { desktopNotificationService } from "@/services/DesktopNotificationServic
 import { useDnd } from "@/hooks/useDnd";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
 
 export const NotificationStatusCard = () => {
+  const isNative = Capacitor.isNativePlatform();
+  const [granted, setGranted] = useState(() => desktopNotificationService.isGranted);
   const [permission, setPermission] = useState<NotificationPermission>(
-    typeof Notification !== "undefined" ? Notification.permission : "default",
+    !isNative && typeof Notification !== "undefined" ? Notification.permission : "default",
   );
   const { isDnd, enableDnd, disableDnd, reason } = useDnd();
 
   useEffect(() => {
-    if (typeof Notification !== "undefined") {
+    if (!isNative && typeof Notification !== "undefined") {
       setPermission(Notification.permission);
     }
-  }, []);
+    setGranted(desktopNotificationService.isGranted);
+  }, [isNative]);
 
   const requestPermission = async () => {
-    const granted = await desktopNotificationService.initialize();
-    setPermission(typeof Notification !== "undefined" ? Notification.permission : "default");
-    if (granted) {
+    const ok = await desktopNotificationService.initialize();
+    setGranted(ok);
+    if (!isNative && typeof Notification !== "undefined") {
+      setPermission(Notification.permission);
+    }
+    if (ok) {
       toast.success("Notifications enabled!");
       desktopNotificationService.send("✅ Notifications activated", {
         body: "You'll now receive alerts for reminders, tasks, and focus sessions.",
       });
     } else {
-      toast.error("Permission denied. Enable notifications in your browser settings.");
+      toast.error(
+        isNative
+          ? "Permission denied. Enable notifications in your device settings."
+          : "Permission denied. Enable notifications in your browser settings.",
+      );
     }
   };
 
-  const supported = typeof Notification !== "undefined";
+  const supported = isNative || typeof Notification !== "undefined";
+  const isGranted = isNative ? granted : permission === "granted";
+  const label = isNative ? "Mobile notifications" : "Desktop notifications";
+  const statusText = !supported
+    ? "Not supported on this device"
+    : isGranted
+    ? "Active — you'll receive alerts"
+    : !isNative && permission === "denied"
+    ? "Blocked — enable in browser settings"
+    : "Not enabled yet";
 
   return (
     <Card>
